@@ -7,4 +7,4 @@ urlpatterns = [
     path("", views.room),
 ]
 
-app_name = 'comments_app'
+app_name = "comments_app"

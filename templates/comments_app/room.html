@@ -17,7 +17,7 @@
             + '/ws/comments/'
         );
 
-        {% comment %} chatSocket.onmessage = function(e) {
+        chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
             const messageList = document.querySelector('#chat-messages');
             const listItem = document.createElement('li');
@@ -25,40 +25,11 @@
             listItem.id = generateUniqueId();
             messageList.appendChild(listItem);
             addCommentForm(listItem);
-        }; {% endcomment %}
-
-        chatSocket.onmessage = function(e) {
-          const data = JSON.parse(e.data);
-          const messageList = document.querySelector('#chat-messages');
-          const listItem = document.createElement('li');
-          listItem.textContent = data.message;
-          listItem.id = generateUniqueId();
-
-          // Отправляем AJAX-запрос для получения информации о пользователе
-          fetch(`/get_user_info/${data.user_id}/`)
-              .then(response => response.json())
-              .then(user => {
-                  // Добавляем информацию о пользователе к комментарию
-                  listItem.textContent += ` - Автор: ${user.username}`;
-                  messageList.appendChild(listItem);
-                  addCommentForm(listItem);
-              })
-              .catch(error => {
-                  console.error('Ошибка при получении информации о пользователе:', error);
-                  // В случае ошибки добавляем комментарий без информации о пользователе
-                  messageList.appendChild(listItem);
-                  addCommentForm(listItem);
-              });
-      };
+        }; 
 
         function generateUniqueId() {
-          // Generate a timestamp to ensure uniqueness
           var timestamp = Date.now();
-
-          // Generate a random number to add randomness
           var random = Math.random() * 1000000;
-
-          // Combine timestamp and random number to create a unique ID
           var uniqueId = "id_" + timestamp + "_" + random;
 
           return uniqueId;
@@ -70,7 +41,7 @@
 
         document.querySelector('#chat-message-input').focus();
         document.querySelector('#chat-message-input').onkeyup = function(e) {
-            if (e.key === 'Enter') {  // enter, return
+            if (e.key === 'Enter') {  
                 document.querySelector('#chat-message-submit').click();
             }
         };
@@ -84,53 +55,31 @@
             messageInputDom.value = '';
         };
 
-        {% comment %} // Функция для добавления сообщения в список сообщений
-        function addMessage(message) {
-            const messageList = document.querySelector('#chat-messages');
-            const listItem = document.createElement('li');
-            listItem.textContent = message;
-            messageList.appendChild(listItem);
-            // Добавляем кнопку "Комментировать" и форму комментария к каждому сообщению
-            addCommentForm(listItem);
-        } {% endcomment %}
-
-        // Функция для добавления кнопки "Комментировать" и формы комментария к сообщению
         function addCommentForm(messageItem) {
             const commentButton = document.createElement('button');
-            commentButton.textContent = 'Комментировать';
+            commentButton.textContent = 'Comment';
             commentButton.addEventListener('click', function() {
                 const commentForm = document.createElement('form');
                 commentForm.innerHTML = `
                     <input type="hidden" name="message-id" value="${messageItem.id}">
                     <input type="text" name="comment-content">
-                    <button type="submit">Отправить комментарий</button>
+                    <button type="submit">Send comment</button>
                 `;
                 commentForm.addEventListener("submit", function(event) {
-                  event.preventDefault(); // Prevent the default form submission behavior
-
-                  // Your code to handle the form submission goes here
-
-                  // For example, you can access form data using FormData
+                  event.preventDefault(); 
                   var formData = new FormData(event.target);
-
                   const ulItem = document.createElement('ul');
                   const listItem = document.createElement('li');
                   listItem.textContent = formData.get("comment-content");
                   var parentElement = document.getElementById(formData.get("message-id"));
-                  // Append the child element to the parent element
 
                   listItem.id = generateUniqueId();
                   ulItem.appendChild(listItem);
                   parentElement.insertBefore(ulItem, commentForm);
-                  // messageList.appendChild(listItem);
                   event.target.remove();
                   addCommentForm(listItem);
-                  // Do something with the form data
-
-                  // Reset the form if needed
 
               });
-                // Удалить предыдущую форму комментария, если она есть
                 const existingForm = messageItem.querySelector('form');
                 if (existingForm) {
                     existingForm.remove();
@@ -140,13 +89,12 @@
             messageItem.appendChild(commentButton);
         }
 
-        // Обработчик события отправки сообщения
         document.querySelector('#chat-message-submit').addEventListener('click', function() {
             const messageInput = document.querySelector('#chat-message-input');
             const message = messageInput.value.trim();
             if (message !== '') {
                 addMessage(message);
-                messageInput.value = ''; // Очищаем поле ввода сообщения
+                messageInput.value = '';
             }
         });
     </script>
